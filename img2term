@@ -4,13 +4,12 @@
 # img2term: Image viewer for Linux terminal #
 #############################################
 
-
 # Requirements:
 # * Terminal with Unicode and 256 colors (or true color) support
 # * imagemagick, bash, sed, bc, coreutils
 
-# Usage: img2term </path/to/image> [zoom% [±Xoffset±Yoffset]] (offsets in characters; relative to center)
-# Normal view:							img2term /home/user/Images/image.png
+# Usage: img2term </path/to/image> [zoom% [±Xoffset±Yoffset]] (X/Y offset in characters; relative to center)
+# Default view:							img2term /home/user/Images/image.png
 # Zoomed:								img2term /home/user/Images/image.png 123.456
 # Zoomed & panned:						img2term /home/user/Images/image.png 123.456 +13-47
 # Output to file:						img2term /home/user/Images/image.png > out.ti
@@ -51,7 +50,7 @@ if [ ! -f "$1" ]; then
        *) zoom=$(sed -e 's/,/./' <<<$2);;
     esac
 
-# Determining whether the image is landscape or portrait (or square) to ensure the image adapts to window/screen dimensions
+# Determine whether the image is landscape or portrait (or square) to ensure the image adapts to window/screen dimensions
     if [ $((img_w*window_h)) -gt $((img_h*window_w/6)) ]
       then out_v=$(bc -l <<< "scale=$prec_bc; $cols_no/$img_w*$zoom*$char_asp_r/6")
       else out_v=$(bc -l <<< "scale=$prec_bc; $lines_no/$img_h*$zoom")
@@ -66,10 +65,10 @@ if [ ! -f "$1" ]; then
 # * Center the image, fill empty spaces with black
 # * Export to ASCII PPM image file format and send to pipe, where:
 #    * Remove the PPM header
-#    * Align output to $cols_no columns (window width×6 [R G B r g b - FOREGROUND/background])
+#    * Align output to $cols_no columns (window width*6 [R G B r g b - FOREGROUND/background])
 #    * Convert 'R G B r g b' decimal values to ANSI escape code for set foreground/background color of the '▌' character
 # … and print formatted output to STDOUT (or file)
-# Reset formatting and move cursor to top left corner
+# Reset formatting and move cursor to the top left corner
     printf "\e[;f$(convert -comment "" "$1"[0] -depth 8 -filter Lanczos2 -resize $(bc -l <<< "$out_v/$char_asp_r*2")%x${out_v} \
     -background black -gravity center -extent $((cols_no/3))x${lines_no}$3 \
     -compress none ppm:- | tail -n+5 | xargs -n $cols_no | sed -e 's:$: :g;s:\([0-9]\+\) \([0-9]\+\) \([0-9]\+\) \([0-9]\+\) \([0-9]\+\) \([0-9]\+\) :\\e\[38;2;\1;\2;\3;48;2;\4;\5;\6m▌:g')\e[m\e[;f"

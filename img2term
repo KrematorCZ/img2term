@@ -4,27 +4,14 @@
 # img2term: Image viewer for Linux terminal #
 #############################################
 
-
-# Requirements:
-# * Terminal with Unicode and 256 colors (or true color) support
-# * imagemagick, bash, sed, bc, coreutils
-
-# Usage: img2term </path/to/image> [zoom% [±Xoffset±Yoffset]] (X/Y offset in characters; relative to center)
-# Default view:							img2term /home/user/Images/image.png
-# Zoomed:								img2term /home/user/Images/image.png 123.456
-# Zoomed & panned:						img2term /home/user/Images/image.png 123.456 +13-47
-# Output to file:						img2term /home/user/Images/image.png > out.ti
-# Multiple output to file (animation):	DIR="/home/user/Images"; for IMGS in $(ls $DIR); do img2term $DIR/$IMGS >> out.ti; done (HUGE FILE!)
-# Viewing saved image/anim:				cat out.ti (file can be compressed with very good compression ratio; then use zcat instead of cat)
-
 # Character dimensions
 # For XTerm (W×H; change with L-Ctrl + RMB):
-#   Huge:		10×20
-#   Large:		 9×18
-#   Medium:		 8×13
-#   Small:		 7×14
-# * Default:	 6×13
-#   Tiny:		 5×8 (recommended)
+#   Huge:		    10×20
+#   Large:		   9×18
+#   Medium:		   8×13
+#   Small:		   7×14
+# * Default:	   6×13
+#   Tiny:		     5×8 (recommended)
 #   Unreadable:  1×2 (high resolution, slowest rendering, without double horizontal resolution)
 char_w=5
 char_h=8

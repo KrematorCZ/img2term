@@ -16,20 +16,17 @@
 char_w=5
 char_h=8
 
-# BC precision
-prec_bc=6
-
 # If file doesn't exist, then die with 'No such file or directory' exit code
 if [ ! -f "$1" ]; then
   exit 2
-  elif grep -q image <<< $(file "$1"); then # If file is image…
+  elif grep -q image <<<$(file "$1"); then # If file is image…
     cols_no=$(($(tput cols)*6))
     lines_no=$(tput lines)
     window_w=$((cols_no*char_w))
     window_h=$((lines_no*char_h))
     img_dims=$(identify -format '%w %h' "$1"[0])
-    img_w=$(awk '{print $1}' <<< $img_dims)
-    img_h=$(awk '{print $2}' <<< $img_dims)
+    img_w=$(awk '{print $1}' <<<$img_dims)
+    img_h=$(awk '{print $2}' <<<$img_dims)
     char_asp_r="($char_w/$char_h)"
 
 # Zoom parameter; you can use decimal comma
@@ -40,8 +37,8 @@ if [ ! -f "$1" ]; then
 
 # Determine whether the image is landscape or portrait (or square) to ensure the image adapts to window/screen dimensions
     if [ $((img_w*window_h)) -gt $((img_h*window_w/6)) ]
-      then out_v=$(bc -l <<< "scale=$prec_bc; $cols_no/$img_w*$zoom*$char_asp_r/6")
-      else out_v=$(bc -l <<< "scale=$prec_bc; $lines_no/$img_h*$zoom")
+      then out_v=$(bc -l <<<"scale=6; $cols_no/$img_w*$zoom*$char_asp_r/6")
+      else out_v=$(bc -l <<<"scale=6; $lines_no/$img_h*$zoom")
     fi
 
 # MAIN ENGINE
@@ -57,10 +54,11 @@ if [ ! -f "$1" ]; then
 #    * Convert 'R G B r g b' decimal values to ANSI escape code for set foreground/background color of the '▌' character
 # … and print formatted output to STDOUT (or file)
 # Reset formatting and move cursor to the top left corner
-    printf "\e[;f$(convert -comment "" "$1"[0] -depth 8 -filter Lanczos2 -resize $(bc -l <<< "$out_v/$char_asp_r*2")%x${out_v} \
-    -background black -gravity center -extent $((cols_no/3))x${lines_no}$3 \
-    -compress none ppm:- | tail -n+5 | xargs -n $cols_no | sed -e 's:$: :g;s:\([0-9]\+\) \([0-9]\+\) \([0-9]\+\) \([0-9]\+\) \([0-9]\+\) \([0-9]\+\) :\\e\[38;2;\1;\2;\3;48;2;\4;\5;\6m▌:g')\e[m\e[;f"
+    printf "\e[;f$(convert -comment "" "$1"[0] -depth 8 -filter Lanczos2 -resize $(bc -l <<<"scale=6; $out_v/$char_asp_r*2")%x${out_v}\
+    -background black -gravity center -extent $((cols_no/3))x${lines_no}$3 -compress none ppm:- |\
+    tail -n+5 | xargs -n $cols_no |\
+    sed -e 's:$: :g;s:\([0-9]\+\) \([0-9]\+\) \([0-9]\+\) \([0-9]\+\) \([0-9]\+\) \([0-9]\+\) :\\e\[38;2;\1;\2;\3;48;2;\4;\5;\6m▌:g')\e[m\e[;f"
 
-# If file is not image, then die with 'Wrong medium type' exit code
+# If file is not an image, then exit with 'Wrong medium type' exit code
     else exit 124
 fi

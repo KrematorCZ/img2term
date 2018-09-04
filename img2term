@@ -6,12 +6,12 @@
 
 # Character dimensions
 # For XTerm (W×H; change with L-Ctrl + RMB):
-#   Huge:		    10×20
-#   Large:		   9×18
-#   Medium:		   8×13
-#   Small:		   7×14
-# * Default:	   6×13
-#   Tiny:		     5×8 (recommended)
+#   Huge:       10×20
+#   Large:       9×18
+#   Medium:      8×13
+#   Small:       7×14
+# * Default:     6×13
+#   Tiny:        5×8 (recommended)
 #   Unreadable:  1×2 (high resolution, slowest rendering, without double horizontal resolution)
 char_w=5
 char_h=8

@@ -1,8 +1,6 @@
 #!/bin/bash -e
 
-#############################################
-# img2term: Image viewer for Linux terminal #
-#############################################
+##  img2term: Image viewer for Linux terminal  ##
 
 # Character dimensions
 # For XTerm (W×H; change with L-Ctrl + RMB):
@@ -17,14 +15,14 @@ char_w=5
 char_h=8
 
 # If file doesn't exist, then die with 'No such file or directory' exit code
-if [ ! -f "$1" ]; then
-  exit 2
+if [ ! -f "$1" ]
+  then exit 2
   elif grep -q image <<<$(file "$1"); then # If file is image…
     cols_no=$(($(tput cols)*6))
     lines_no=$(tput lines)
     window_w=$((cols_no*char_w))
     window_h=$((lines_no*char_h))
-    img_dims=$(identify -format '%w %h' "$1"[0])
+    img_dims=$(identify -format '%w %h' "$1")
     img_w=$(awk '{print $1}' <<<$img_dims)
     img_h=$(awk '{print $2}' <<<$img_dims)
     char_asp_r="($char_w/$char_h)"
@@ -35,7 +33,7 @@ if [ ! -f "$1" ]; then
        *) zoom=$(sed -e 's/,/./' <<<$2);;
     esac
 
-# Determine whether the image is landscape or portrait (or square) to ensure the image adapts to window/screen dimensions
+# Determine whether the image is landscape or portrait (or square) to ensure the image adapts to window/screen
     if [ $((img_w*window_h)) -gt $((img_h*window_w/6)) ]
       then out_v=$(bc -l <<<"scale=6; $cols_no/$img_w*$zoom*$char_asp_r/6")
       else out_v=$(bc -l <<<"scale=6; $lines_no/$img_h*$zoom")
@@ -46,8 +44,8 @@ if [ ! -f "$1" ]; then
 # * Remove comment (if any)
 # * Use first frame from animated image (eg GIF)
 # * Convert to 8-bit depth
-# * Use high quality (sharp but without distortions) interpolation filter, resize image to adjust to window size
-# * Center the image, fill empty spaces with black
+# * Use Lanczos' (sharp but without distortions) interpolation filter, resize image to fit to the window
+# * Center image, fill empty spaces with black
 # * Export to ASCII PPM image file format and send to pipe, where:
 #    * Remove the PPM header
 #    * Align output to $cols_no columns (window width*6 [R G B r g b - FOREGROUND/background])

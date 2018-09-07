@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-##  img2term: Image viewer for Linux terminal  ##
+##  tiv: Image viewer for Linux terminal  ##
 
 # Character dimensions
 # For XTerm (W×H; change with L-Ctrl + RMB):
